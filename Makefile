@@ -1,4 +1,4 @@
-##===- examples/C0PreProc/Makefile -----------------------*- Makefile -*-===##
+##===- tools/C0PreProc/Makefile -----------------------*- Makefile -*-===##
 # 
 #                     The LLVM Compiler Infrastructure
 #
@@ -6,9 +6,11 @@
 # License. See LICENSE.TXT for details.
 # 
 ##===----------------------------------------------------------------------===##
-LEVEL=../..
-TOOLNAME=C0PreProc
-EXAMPLE_TOOL = 1
+LEVEL := ../..
+TOOLNAME := C0PreProc
 LINK_COMPONENTS := bitwriter bitreader irreader transformutils
+
+# This tool has no plugins, optimize startup time.
+TOOL_NO_EXPORTS := 1
 
 include $(LEVEL)/Makefile.common

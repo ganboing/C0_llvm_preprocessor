@@ -1,6 +1,6 @@
-set(LLVM_LINK_COMPONENTS bitwriter bitreader transformutils)
+set(LLVM_LINK_COMPONENTS support bitwriter bitreader irreader transformutils)
 
-add_llvm_example(C0PreProc
+add_llvm_tool(C0PreProc
   C0PreProc.cpp
   spot1.cpp
   )
