@@ -14,7 +14,7 @@ namespace C0{
 
 	class ProcException : public ::std::exception{
 	public:
-		ProcException(const ProcException&) noexcept LLVM_DELETED_FUNCTION;
+		ProcException(const ProcException& other) noexcept :message(other.message){}
 		explicit ProcException(const char* _message) noexcept: message(_message){
 		}
 		virtual ~ProcException() noexcept{}
