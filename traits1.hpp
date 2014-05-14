@@ -1,4 +1,5 @@
 #include "llvm/IR/Module.h"
+#include "llvm/Support/InstIterator.h"
 #include <map>
 
 template<class Container, class Function>
