@@ -14,7 +14,8 @@ namespace C0{
 
 	class ProcException : public ::std::exception{
 	public:
-		ProcException(const char* _message) noexcept: message(_message){
+		ProcException(const ProcException&) noexcept LLVM_DELETED_FUNCTION;
+		explicit ProcException(const char* _message) noexcept: message(_message){
 		}
 		virtual ~ProcException() noexcept{}
 		virtual const char* what() const noexcept{ return message; }
@@ -27,7 +28,7 @@ namespace C0{
 		FunctionType* fnty = pack.first;
 		if (fnty->isVarArg())
 		{
-			throw ::std::exception("varg function not supported!");
+			throw ProcException("varg function not supported!");
 		}
 		AttributeSet attrset = pack.second;
 		typedef SmallVector<Type*, 2> TypeArr_t;
