@@ -1,6 +1,7 @@
 #include "llvm/Support/raw_ostream.h"
 #include "WrapperSet.h"
 #include "traits1.hpp"
+#include "Exceptions.h"
 
 using namespace llvm;
 
