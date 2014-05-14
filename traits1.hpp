@@ -12,7 +12,7 @@ public:
 	template<class Ele>
 	void operator() (Ele* pIns) throw()
 	{
-		second(pIns, first);
+		_pair::second(pIns, _pair::first);
 	}
 };
 

@@ -6,6 +6,8 @@ using namespace llvm;
 
 namespace C0{
 
+	//class 
+
 	SpawnWrapperPack_t Make2(CallEntryType_t pack)
 	{
 		FunctionType* fnty = pack.first;

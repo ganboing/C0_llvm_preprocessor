@@ -7,7 +7,7 @@
 # 
 ##===----------------------------------------------------------------------===##
 LEVEL := ../..
-TOOLNAME := C0PreProc
+TOOLNAME := C0_llvm_preprocessor
 LINK_COMPONENTS := bitwriter bitreader irreader transformutils
 
 # This tool has no plugins, optimize startup time.
