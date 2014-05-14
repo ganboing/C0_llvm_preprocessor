@@ -1,3 +1,6 @@
+#ifndef C0_EXCEPTION
+#define C0_EXCEPTION
+
 #include <exception>
 
 #ifdef _MSC_VER
@@ -17,3 +20,5 @@ namespace C0{
 		const char* message;
 	};
 }
+
+#endif

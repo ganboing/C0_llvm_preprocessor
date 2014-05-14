@@ -252,23 +252,6 @@ void Conv1(CallInst* pCall)
 
 
 
-void collect1(C0::CallEntTypeSet_t* pset, Instruction* pIns) throw()
-{
-	CallInst* pCall;
-	if (pCall = dyn_cast<CallInst>(pIns))
-	{
-		PointerType* FuncTyP;
-		if (FuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType()))
-		{
-			FunctionType* FuncTy;
-			if (FuncTy = dyn_cast<FunctionType>(FuncTyP->getElementType()))
-			{
-
-			}
-		}
-	}
-	
-}
 
 void Make3(Module* M)
 {

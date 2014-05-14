@@ -1,4 +1,5 @@
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/IR/Instructions.h"
 #include "WrapperSet.h"
 #include "traits1.hpp"
 #include "Exceptions.h"
@@ -6,7 +7,6 @@
 using namespace llvm;
 
 namespace C0{
-
 	SpawnWrapperPack_t Make2(CallEntryType_t pack)
 	{
 		FunctionType* fnty = pack.first;
@@ -52,4 +52,37 @@ namespace C0{
 	}
 
 
+	void collect1(Instruction* pIns, SpawnFuncMap_t* pmap) noexcept
+	{
+		CallInst* pCall;
+		if (pCall = dyn_cast<CallInst>(pIns))
+		{
+			const AttributeSet* pCallAttr = &(pCall->getAttributes());
+			PointerType* pFuncTyP;
+			if (pFuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType()))
+			{
+				FunctionType* pFuncTy;
+				if (pFuncTy = dyn_cast<FunctionType>(pFuncTyP->getElementType()))
+				{
+					CallEntryType_t CallEntTy(::std::make_pair(pFuncTy, pCallAttr));
+					SpawnFuncMap_t::iterator iMap = pmap->find(CallEntTy);
+					if (iMap == pmap->end())
+					{
+						return;
+					}
+					try{
+						pmap->insert(::std::make_pair(CallEntTy, Make2(CallEntTy)));
+					}
+					catch (...){
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	void test1(Module* M){
+		SpawnFuncMap_t Map;
+		applyCFE apply1(::std::make_pair(&Map, collect1));
+	}
 }
