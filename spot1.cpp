@@ -1,16 +1,65 @@
 #include "llvm/Support/raw_ostream.h"
+#include "llvm/Support/DataStream.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/LLVMContext.h"
+#include "llvm/Bitcode/ReaderWriter.h"
 #include "WrapperSet.h"
 #include "traits1.hpp"
 #include "Exceptions.h"
+#include <functional>
 
 using namespace llvm;
 
 namespace C0{
 
-	class apply1 : public ::std::pair<>
+	void IterOverSpawnFunc(Module* M,const ::std::function<void(Instruction*)>& F)
+	{
 
-	SpawnWrapperPack_t Make2(CallEntryType_t pack)
+	}
+
+	void IterOverSpawnFunc_Replace(Module* M,const ::std::function<Instruction*(Instruction*)>& F)
+	{
+
+	}
+
+	class collect1{
+	public:
+		explicit collect1(SpawnFuncMap_t* p) : pMap(p){}
+		collect1(const collect1& other) : pMap(other.pMap){}
+		void operator() (Instruction* pIns)
+		{
+			CallInst* pCall;
+			if (pCall = dyn_cast<CallInst>(pIns))
+			{
+				const AttributeSet* pCallAttr = &(pCall->getAttributes());
+				PointerType* pFuncTyP;
+				if (pFuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType()))
+				{
+					FunctionType* pFuncTy;
+					if (pFuncTy = dyn_cast<FunctionType>(pFuncTyP->getElementType()))
+					{
+						CallEntryType_t CallEntTy(::std::make_pair(pFuncTy, pCallAttr));
+						SpawnFuncMap_t::iterator iMap = pMap->find(CallEntTy);
+						if (iMap == pMap->end())
+						{
+							return;
+						}
+						try{
+							pMap->insert(::std::make_pair(CallEntTy, /*Make2(CallEntTy)*/SpawnWrapperPack_t()));
+						}
+						catch (...){
+							return;
+						}
+					}
+				}
+			}
+
+		}
+	private:
+		SpawnFuncMap_t* pMap;
+	};
+
+	/*SpawnWrapperPack_t Make2(CallEntryType_t pack)
 	{
 		FunctionType* fnty = pack.first;
 		if (fnty->isVarArg())
@@ -53,39 +102,37 @@ namespace C0{
 		}
 		Function::Create(fnty, GlobalValue::LinkageTypes::ExternalLinkage);
 	}
+	*/
 
 
-	void collect1(Instruction* pIns, SpawnFuncMap_t* pmap) noexcept
-	{
-		CallInst* pCall;
-		if (pCall = dyn_cast<CallInst>(pIns))
-		{
-			const AttributeSet* pCallAttr = &(pCall->getAttributes());
-			PointerType* pFuncTyP;
-			if (pFuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType()))
-			{
-				FunctionType* pFuncTy;
-				if (pFuncTy = dyn_cast<FunctionType>(pFuncTyP->getElementType()))
-				{
-					CallEntryType_t CallEntTy(::std::make_pair(pFuncTy, pCallAttr));
-					SpawnFuncMap_t::iterator iMap = pmap->find(CallEntTy);
-					if (iMap == pmap->end())
-					{
-						return;
-					}
-					try{
-						pmap->insert(::std::make_pair(CallEntTy, Make2(CallEntTy)));
-					}
-					catch (...){
-						return;
-					}
-				}
-			}
-		}
-	}
 
 	void test1(Module* M){
 		SpawnFuncMap_t Map;
-		applyCFE apply1(::std::make_pair(&Map, collect1));
+		collect1 collector(&Map);
+		IterOverSpawnFunc(M, collector);
 	}
+
+
+}
+
+int main(int argc, const char* const* argv)
+{
+	LLVMContext CurrentContext;
+
+	::std::string ErrorMessage;
+	OwningPtr<Module> M;
+
+	// Use the bitcode streaming interface
+	DataStreamer *streamer = getDataFileStreamer(argv[1], &ErrorMessage);
+	if (streamer) {
+		M.reset(getStreamedBitcodeModule(argv[1], streamer, CurrentContext,
+			&ErrorMessage));
+		if (M.get() != 0 && M->MaterializeAllPermanently(&ErrorMessage)) {
+			M.reset();
+		}
+	}
+
+	C0::test1(M.get());
+
+	return 0;
 }
