@@ -29,14 +29,14 @@ namespace C0{
 		void operator() (Instruction* pIns)
 		{
 			CallInst* pCall;
-			if (pCall = dyn_cast<CallInst>(pIns))
+			if ((pCall = dyn_cast<CallInst>(pIns)))
 			{
 				const AttributeSet* pCallAttr = &(pCall->getAttributes());
 				PointerType* pFuncTyP;
-				if (pFuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType()))
+				if ((pFuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType())))
 				{
 					FunctionType* pFuncTy;
-					if (pFuncTy = dyn_cast<FunctionType>(pFuncTyP->getElementType()))
+					if ((pFuncTy = dyn_cast<FunctionType>(pFuncTyP->getElementType())))
 					{
 						CallEntryType_t CallEntTy(::std::make_pair(pFuncTy, pCallAttr));
 						SpawnFuncMap_t::iterator iMap = pMap->find(CallEntTy);
