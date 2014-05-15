@@ -7,7 +7,7 @@
 #include <map>
 #include <functional>
 
-template<class Container, class Function>
+/*template<class Container, class Function>
 class applyCFE : public ::std::pair<Container*, Function>
 {
 	typedef ::std::pair<Container*, Function> _pair;
@@ -21,7 +21,7 @@ public:
 	{
 		_pair::second(pIns, _pair::first);
 	}
-};
+};*/
 
 template<class F>
 void applyFuncToInsIter(llvm::Module* M, F apply)
