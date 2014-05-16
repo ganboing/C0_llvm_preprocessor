@@ -1,5 +1,6 @@
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Support/DataStream.h"
+#include "llvm/Support/Regex.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/Bitcode/ReaderWriter.h"
@@ -12,54 +13,37 @@ using namespace llvm;
 
 namespace C0{
 
-	void IterOverSpawnFunc(Module* M,const ::std::function<void(Instruction*)>& F)
+	void test()
 	{
-
+		//AttrBuilder
 	}
 
-	void IterOverSpawnFunc_Replace(Module* M,const ::std::function<Instruction*(Instruction*)>& F)
+	void IterOverSpawnFunc(Module* M, const ::std::function<void(Instruction*)>& F)
 	{
-
-	}
-
-	class collect1{
-	public:
-		explicit collect1(SpawnFuncMap_t* p) : pMap(p){}
-		collect1(const collect1& other) : pMap(other.pMap){}
-		void operator() (Instruction* pIns)
+		static Regex l0_spawn_block_begin("l0_spawn_call_begin_[0-9]+_[0-9]+");
+		for (Module::iterator iFunc = M->begin(), iFuncE = M->end(); iFunc != iFuncE; ++iFunc)
 		{
-			CallInst* pCall;
-			if ((pCall = dyn_cast<CallInst>(pIns)))
+			for (Function::iterator iBB = iFunc->begin(), iBBE = iFunc->end(); iBB != iBBE; ++iBB)
 			{
-				const AttributeSet* pCallAttr = &(pCall->getAttributes());
-				PointerType* pFuncTyP;
-				if ((pFuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType())))
+				if (l0_spawn_block_begin.match(iBB->getName()))
 				{
-					FunctionType* pFuncTy;
-					if ((pFuncTy = dyn_cast<FunctionType>(pFuncTyP->getElementType())))
+					BasicBlock::iterator iIns = iBB->end(), iInsB = iBB->begin();
+					if (iIns != iInsB)
 					{
-						CallEntryType_t CallEntTy(::std::make_pair(pFuncTy, pCallAttr));
-						SpawnFuncMap_t::iterator iMap = pMap->find(CallEntTy);
-						if (iMap == pMap->end())
-						{
-							return;
-						}
-						try{
-							pMap->insert(::std::make_pair(CallEntTy, /*Make2(CallEntTy)*/SpawnWrapperPack_t()));
-						}
-						catch (...){
-							return;
-						}
+						--iIns;
+						F(&*iIns);
 					}
 				}
 			}
-
 		}
-	private:
-		SpawnFuncMap_t* pMap;
-	};
+	}
 
-	/*SpawnWrapperPack_t Make2(CallEntryType_t pack)
+	void IterOverSpawnFunc_Replace(Module* M, const ::std::function<Instruction*(Instruction*)>& F)
+	{
+
+	}
+
+	SpawnWrapperPack_t Make2(CallEntryType_t pack)
 	{
 		FunctionType* fnty = pack.first;
 		if (fnty->isVarArg())
@@ -102,8 +86,43 @@ namespace C0{
 		}
 		Function::Create(fnty, GlobalValue::LinkageTypes::ExternalLinkage);
 	}
-	*/
 
+	class collect1{
+	public:
+		explicit collect1(SpawnFuncMap_t* p) : pMap(p){}
+		collect1(const collect1& other) : pMap(other.pMap){}
+		void operator() (Instruction* pIns)
+		{
+			CallInst* pCall;
+			if ((pCall = dyn_cast<CallInst>(pIns)))
+			{
+				const AttributeSet* pCallAttr = &(pCall->getAttributes());
+				PointerType* pFuncTyP;
+				if ((pFuncTyP = dyn_cast<PointerType>(pCall->getCalledValue()->getType())))
+				{
+					FunctionType* pFuncTy;
+					if ((pFuncTy = dyn_cast<FunctionType>(pFuncTyP->getElementType())))
+					{
+						CallEntryType_t CallEntTy(::std::make_pair(pFuncTy, *pCallAttr));
+						SpawnFuncMap_t::iterator iMap = pMap->find(CallEntTy);
+						if (iMap == pMap->end())
+						{
+							return;
+						}
+						try{
+							pMap->insert(::std::make_pair(CallEntTy, Make2(CallEntTy)));
+						}
+						catch (...){
+							return;
+						}
+					}
+				}
+			}
+
+		}
+	private:
+		SpawnFuncMap_t* pMap;
+	};
 
 
 	void test1(Module* M){
